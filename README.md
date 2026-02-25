@@ -248,3 +248,170 @@ MIT License - see LICENSE file for details
 - Issues: GitHub Issues
 - Documentation: `/docs` directory
 - Live Demo: http://hiimage.online
+
+## 🗄️ Database Setup
+
+### Quick Setup
+```bash
+# Run the setup script
+chmod +x setup-database.sh
+./setup-database.sh
+
+# Or manually
+sqlite3 database.db < database-schema.sql
+```
+
+### Sample Data
+The setup script includes:
+- Admin user: `admin@example.com` / `admin123`
+- Sample categories: Technology, Business, Politics, Sports, Entertainment
+- Sample articles with content
+
+### Manual Setup
+```sql
+-- Create database
+sqlite3 database.db < database-schema.sql
+
+-- Add admin user (password: admin123)
+INSERT INTO users (username, email, password_hash, is_admin) 
+VALUES ('admin', 'admin@example.com', 'scrypt:32768:8:1$Klg8T7Zz$d9b5b...', 1);
+```
+
+## 🔄 Updates and Maintenance
+
+### Automated News Updates
+The system includes a professional news updater that can:
+- Monitor RSS feeds for new content
+- Automatically create and publish articles
+- Add images and optimize content
+- Categorize and tag articles
+
+```bash
+cd news-updater
+python3 professional-updater-fixed.py
+```
+
+### Backup and Restore
+```bash
+# Backup database
+sqlite3 database.db .dump > backup-$(date +%Y%m%d).sql
+
+# Restore from backup
+sqlite3 database.db < backup-file.sql
+```
+
+## 🚨 Troubleshooting
+
+### Common Issues
+
+1. **Port already in use**
+```bash
+# Find and kill process using port 3000
+lsof -ti:3000 | xargs kill -9
+```
+
+2. **Database connection error**
+```bash
+# Recreate database
+rm database.db
+./setup-database.sh
+```
+
+3. **Missing dependencies**
+```bash
+# Reinstall all dependencies
+rm -rf node_modules
+npm install
+```
+
+### Logs
+```bash
+# View application logs
+npm run logs
+
+# View error logs
+tail -f error.log
+```
+
+## 📈 Performance
+
+### Optimization Tips
+1. **Enable caching** in Nginx configuration
+2. **Use CDN** for static assets
+3. **Implement database indexing** for frequent queries
+4. **Enable compression** for HTTP responses
+5. **Use Redis** for session storage in production
+
+### Monitoring
+```bash
+# Check server status
+curl http://localhost:3000/api/health
+
+# Monitor memory usage
+pm2 monit
+
+# View real-time logs
+pm2 logs news-website
+```
+
+## 🎯 Deployment Checklist
+
+- [ ] Update `.env` with production values
+- [ ] Set up SSL certificate (Let's Encrypt)
+- [ ] Configure firewall (UFW)
+- [ ] Set up backup system
+- [ ] Configure monitoring (PM2, Logrotate)
+- [ ] Test all API endpoints
+- [ ] Verify mobile responsiveness
+- [ ] Test admin panel functionality
+- [ ] Set up automated deployments
+
+## 📞 Support & Community
+
+- **GitHub Issues**: Report bugs and request features
+- **Documentation**: Complete docs in `/docs` directory
+- **Live Support**: Contact via admin panel
+- **Community Forum**: Coming soon
+
+## 🏆 Credits
+
+- **Frontend Design**: Modern CSS with component-based architecture
+- **Backend Architecture**: Node.js/Express with RESTful API design
+- **Database Design**: SQLite with efficient schema
+- **Automation System**: Python-based news aggregation
+- **Deployment**: Nginx, PM2, systemd integration
+
+## 📊 Statistics
+
+- **Lines of Code**: ~28,000
+- **Files**: 74
+- **Dependencies**: 45 npm packages
+- **Database Tables**: 8
+- **API Endpoints**: 15
+- **UI Components**: 25+
+
+## 🔮 Roadmap
+
+### Planned Features
+- [ ] User profiles with avatars
+- [ ] Newsletter subscription system
+- [ ] Advanced analytics dashboard
+- [ ] Mobile app (React Native)
+- [ ] Social media integration
+- [ ] Multi-language support
+- [ ] Podcast integration
+- [ ] Video content support
+
+### Technical Improvements
+- [ ] Migrate to PostgreSQL for production
+- [ ] Implement GraphQL API
+- [ ] Add Redis caching layer
+- [ ] Docker containerization
+- [ ] Kubernetes deployment
+- [ ] CI/CD pipeline
+
+---
+
+**Enjoy building your news platform!** 🚀
+
+*Last updated: February 25, 2026*
