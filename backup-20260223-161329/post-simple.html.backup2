@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsHub | Article</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            text-decoration: none;
+        }
+        .back-btn {
+            background: #2563eb;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+        .article-title {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        .article-meta {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .article-content {
+            font-size: 1.1em;
+            line-height: 1.8;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2em;
+            color: #666;
+        }
+        .error {
+            color: #dc2626;
+            padding: 20px;
+            background: #fee2e2;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="/" class="logo">NewsHub</a>
+        <a href="/" class="back-btn">← Back to News</a>
+    </div>
+    
+    <div id="article-content">
+        <div class="loading">Loading article content...</div>
+    </div>
+
+    <script>
+        // Simple slug extraction
+        function getSlugFromURL() {
+            const path = window.location.pathname;
+            console.log('Current path:', path);
+            
+            // Remove '/post/' prefix if present
+            if (path.startsWith('/post/')) {
+                return path.substring(6);
+            }
+            return null;
+        }
+        
+        // Simple article loading
+        async function loadArticle() {
+            console.log('Starting to load article...');
+            
+            const slug = getSlugFromURL();
+            console.log('Extracted slug:', slug);
+            
+            if (!slug) {
+                showError('No article specified in URL');
+                return;
+            }
+            
+            try {
+                console.log('Fetching from API...');
+                const response = await fetch(`/api/posts/${slug}`);
+                console.log('API response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`API returned ${response.status}`);
+                }
+                
+                const article = await response.json();
+                console.log('Article loaded:', article.title);
+                
+                // Display the article
+                displayArticle(article);
+                
+            } catch (error) {
+                console.error('Error loading article:', error);
+                showError(`Failed to load article: ${error.message}`);
+            }
+        }
+        
+        
+            // Convert markdown to HTML
+            function markdownToHtml(markdown) {
+                // Basic markdown conversion
+                let html = markdown
+                    .replace(/^# (.*$)/gim, '<h1>$1</h1>')
+                    .replace(/^## (.*$)/gim, '<h2>$1</h2>')
+                    .replace(/^### (.*$)/gim, '<h3>$1</h3>')
+                    .replace(/^#### (.*$)/gim, '<h4>$1</h4>')
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                    .replace(/^\* (.*$)/gim, '<li>$1</li>')
+                    .replace(/(<li>.*?<\/li>)/g, '<ul>$1</ul>')
+                    .replace(/
+/g, '<br>');
+                return html;
+            }
+            
+function displayArticle(article) {
+        // Display featured image
+        if (article.featured_image) {
+            const img = document.getElementById('featured-image');
+            img.src = article.featured_image;
+            img.alt = article.image_caption || article.title;
+            img.style.display = 'block';
+        }
+            const container = document.getElementById('article-content');
+            
+            const html = `
+                <!-- Featured Image -->
+<div id="featured-image-container" style="margin: 20px 0; text-align: center;">
+    <img id="featured-image" src="" alt="" style="max-width: 100%; max-height: 500px; border-radius: 8px; display: none;">
+</div>
+<h1 class="article-title">${article.title}</h1>
+                <div class="article-meta">
+                    <strong>Author:</strong> ${article.author_name || 'Unknown'} |
+                    <strong>Published:</strong> ${new Date(article.published_at).toLocaleDateString()} |
+                    <strong>Views:</strong> ${article.view_count || 0}
+                </div>
+                <div class="article-content">
+                    ${article.content.split('\n').map(p => `<p>${p}</p>`).join('')}
+                </div>
+                ${article.source_url ? `<p><strong>Source:</strong> <a href="${article.source_url}" target="_blank">${article.source_url}</a></p>` : ''}
+            `;
+            
+            container.innerHTML = html;
+        }
+        
+        function showError(message) {
+            const container = document.getElementById('article-content');
+            container.innerHTML = `
+                <div class="error">
+                    <h2>Error Loading Article</h2>
+                    <p>${message}</p>
+                    <p>Slug: ${getSlugFromURL() || 'none'}</p>
+                    <p>URL: ${window.location.href}</p>
+                    <a href="/" class="back-btn" style="display: inline-block; margin-top: 20px;">
+                        ← Back to News
+                    </a>
+                </div>
+            `;
+        }
+        
+        // Start loading when page is ready
+        document.addEventListener('DOMContentLoaded', loadArticle);
+    </script>
+</body>
+</html>

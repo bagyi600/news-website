@@ -1,0 +1,615 @@
+# 🚀 ADVANCED VPS TOOLS & AUTOMATION SCRIPTS
+
+## 🎯 SPECIALIZED TOOLS BEYOND BASICS
+
+### **🛡️ SECURITY & HARDENING TOOLS**
+
+**1. Fail2ban - Intrusion Prevention**
+```bash
+sudo apt install -y fail2ban
+sudo systemctl enable fail2ban
+sudo systemctl start fail2ban
+```
+
+**2. ClamAV - Antivirus**
+```bash
+sudo apt install -y clamav clamav-daemon
+sudo freshclam  # Update virus definitions
+clamscan -r /home  # Scan directory
+```
+
+**3. Lynis - Security Auditing**
+```bash
+sudo apt install -y lynis
+sudo lynis audit system
+```
+
+**4. Rkhunter - Rootkit Detection**
+```bash
+sudo apt install -y rkhunter
+sudo rkhunter --check
+```
+
+**5. AIDE - File Integrity Monitoring**
+```bash
+sudo apt install -y aide
+sudo aideinit
+sudo aide --check
+```
+
+### **📊 ADVANCED MONITORING TOOLS**
+
+**1. Netdata - Real-time Monitoring**
+```bash
+# One-line install
+bash <(curl -Ss https://my-netdata.io/kickstart.sh)
+# Access at: http://localhost:19999
+```
+
+**2. Glances - Cross-platform Monitoring**
+```bash
+sudo apt install -y glances
+glances  # Run in terminal
+```
+
+**3. Htop - Enhanced Process Viewer**
+```bash
+sudo apt install -y htop
+htop  # Better than top
+```
+
+**4. Iotop - Disk I/O Monitoring**
+```bash
+sudo apt install -y iotop
+sudo iotop  # Monitor disk usage
+```
+
+**5. Nethogs - Network Traffic per Process**
+```bash
+sudo apt install -y nethogs
+sudo nethogs  # See which process uses bandwidth
+```
+
+### **🌐 NETWORK & CONNECTIVITY TOOLS**
+
+**1. Nmap - Network Discovery**
+```bash
+sudo apt install -y nmap
+nmap -sP 192.168.1.0/24  # Ping scan
+nmap -sV example.com     # Service detection
+```
+
+**2. Iperf3 - Network Performance Testing**
+```bash
+sudo apt install -y iperf3
+# Server: iperf3 -s
+# Client: iperf3 -c server_ip
+```
+
+**3. MTR - Network Diagnostic**
+```bash
+sudo apt install -y mtr
+mtr google.com  # Traceroute + ping
+```
+
+**4. Tcpdump - Packet Analyzer**
+```bash
+sudo apt install -y tcpdump
+sudo tcpdump -i eth0  # Capture packets
+```
+
+**5. Ngrep - Network Grep**
+```bash
+sudo apt install -y ngrep
+sudo ngrep -d eth0 port 80  # Filter HTTP traffic
+```
+
+### **💾 STORAGE & FILE MANAGEMENT**
+
+**1. NCdu - Disk Usage Analyzer**
+```bash
+sudo apt install -y ncdu
+ncdu /  # Analyze disk usage
+```
+
+**2. Fdupes - Find Duplicate Files**
+```bash
+sudo apt install -y fdupes
+fdupes -r /home  # Find duplicates recursively
+```
+
+**3. Rsync - Advanced File Sync**
+```bash
+sudo apt install -y rsync
+rsync -avz source/ user@remote:/destination/
+```
+
+**4. Midnight Commander - File Manager**
+```bash
+sudo apt install -y mc
+mc  # Launch file manager
+```
+
+**5. Tree - Directory Listing**
+```bash
+sudo apt install -y tree
+tree -L 3  # Show 3 levels deep
+```
+
+### **🔧 DEVELOPMENT & DEBUGGING TOOLS**
+
+**1. Strace - System Call Tracer**
+```bash
+sudo apt install -y strace
+strace ls -la  # Trace system calls
+```
+
+**2. Ltrace - Library Call Tracer**
+```bash
+sudo apt install -y ltrace
+ltrace ls -la  # Trace library calls
+```
+
+**3. GDB - GNU Debugger**
+```bash
+sudo apt install -y gdb
+gdb ./program  # Debug program
+```
+
+**4. Valgrind - Memory Debugger**
+```bash
+sudo apt install -y valgrind
+valgrind ./program  # Check memory leaks
+```
+
+**5. JQ - JSON Processor**
+```bash
+sudo apt install -y jq
+curl -s https://api.example.com/data | jq '.results'
+```
+
+### **📈 LOG MANAGEMENT & ANALYSIS**
+
+**1. Logwatch - Log Analyzer**
+```bash
+sudo apt install -y logwatch
+sudo logwatch --detail High  # Generate report
+```
+
+**2. GoAccess - Web Log Analyzer**
+```bash
+sudo apt install -y goaccess
+goaccess /var/log/nginx/access.log --log-format=COMBINED
+```
+
+**3. MultiTail - Multiple Log Viewer**
+```bash
+sudo apt install -y multitail
+multitail /var/log/syslog /var/log/auth.log
+```
+
+**4. Lnav - Log File Navigator**
+```bash
+sudo apt install -y lnav
+lnav /var/log/  # Browse all logs
+```
+
+### **🤖 AUTOMATION & SCRIPTING ENHANCEMENTS**
+
+**1. Expect - Automated Interactive Sessions**
+```bash
+sudo apt install -y expect
+# Automates telnet, ftp, ssh, etc.
+```
+
+**2. Parallel - Parallel Execution**
+```bash
+sudo apt install -y parallel
+ls *.jpg | parallel convert {} -resize 800x600 resized_{}
+```
+
+**3. Tmux - Terminal Multiplexer**
+```bash
+sudo apt install -y tmux
+tmux new -s mysession  # Start new session
+```
+
+**4. Screen - Alternative Multiplexer**
+```bash
+sudo apt install -y screen
+screen -S mysession  # Start screen session
+```
+
+**5. Byobu - Enhanced Tmux/Screen**
+```bash
+sudo apt install -y byobu
+byobu  # Launch enhanced terminal
+```
+
+### **🎨 TERMINAL ENHANCEMENTS**
+
+**1. Zsh + Oh My Zsh**
+```bash
+sudo apt install -y zsh
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+```
+
+**2. Powerline - Statusline Plugin**
+```bash
+sudo apt install -y powerline
+# Add to .bashrc: powerline-daemon -q
+```
+
+**3. FZF - Fuzzy Finder**
+```bash
+sudo apt install -y fzf
+# Ctrl+R for history search
+```
+
+**4. Bat - Better Cat**
+```bash
+sudo apt install -y bat
+bat file.txt  # Syntax highlighting
+```
+
+**5. Exa - Modern ls Replacement**
+```bash
+sudo apt install -y exa
+exa -la --git  # Better listing with git status
+```
+
+### **⚡ PERFORMANCE OPTIMIZATION TOOLS**
+
+**1. Tuned - System Tuning**
+```bash
+sudo apt install -y tuned tuned-utils
+sudo tuned-adm profile throughput-performance
+```
+
+**2. Cpulimit - CPU Usage Limiter**
+```bash
+sudo apt install -y cpulimit
+cpulimit -l 50 -p 1234  # Limit process to 50% CPU
+```
+
+**3. Ionice - I/O Priority**
+```bash
+# Built-in
+ionice -c 3 -p 1234  # Set idle I/O priority
+```
+
+**4. Taskset - CPU Affinity**
+```bash
+# Built-in
+taskset -c 0,1 ./program  # Run on CPUs 0 and 1
+```
+
+### **🔐 ENCRYPTION & SECURITY**
+
+**1. GnuPG - Encryption**
+```bash
+sudo apt install -y gnupg
+gpg --gen-key  # Generate key pair
+```
+
+**2. OpenSSL - Cryptography Toolkit**
+```bash
+sudo apt install -y openssl
+openssl genrsa -out key.pem 2048
+```
+
+**3. AESCrypt - File Encryption**
+```bash
+sudo apt install -y aespipe
+# Simple file encryption/decryption
+```
+
+### **🌍 WEB & API TOOLS**
+
+**1. HTTPie - Modern HTTP Client**
+```bash
+sudo apt install -y httpie
+http GET https://api.example.com/users
+```
+
+**2. Curl - Already installed, but enhanced:**
+```bash
+# JSON output
+curl -s https://api.example.com/data | jq .
+
+# Follow redirects
+curl -L https://example.com
+
+# Save cookies
+curl -c cookies.txt https://example.com/login
+```
+
+**3. Wget - Advanced Downloading**
+```bash
+sudo apt install -y wget
+wget -r -l 2 https://example.com  # Recursive download
+```
+
+**4. Siege - HTTP Load Testing**
+```bash
+sudo apt install -y siege
+siege -c 10 -t 30s https://example.com
+```
+
+### **📦 PACKAGE MANAGEMENT ENHANCEMENTS**
+
+**1. Aptitude - Advanced Package Manager**
+```bash
+sudo apt install -y aptitude
+aptitude search '~i'  # Show installed packages
+```
+
+**2. Deborphan - Find Orphaned Packages**
+```bash
+sudo apt install -y deborphan
+deborphan  # List orphaned packages
+```
+
+**3. Apt-file - Search Package Contents**
+```bash
+sudo apt install -y apt-file
+apt-file update
+apt-file search /usr/bin/convert
+```
+
+### **🔄 BACKUP & RECOVERY ENHANCEMENTS**
+
+**1. Timeshift - System Restore**
+```bash
+sudo apt install -y timeshift
+sudo timeshift --create  # Create snapshot
+```
+
+**2. Déjà Dup - Simple Backup**
+```bash
+sudo apt install -y deja-dup
+# GUI backup tool with encryption
+```
+
+**3. Rsnapshot - File System Snapshot**
+```bash
+sudo apt install -y rsnapshot
+# Incremental backups with hard links
+```
+
+### **🎯 READY-TO-USE AUTOMATION SCRIPTS**
+
+**1. System Health Check Script**
+```bash
+#!/bin/bash
+# system-health.sh
+echo "=== System Health Check ==="
+echo "Date: $(date)"
+echo "Uptime: $(uptime)"
+echo "Load: $(cat /proc/loadavg)"
+echo "Memory: $(free -h | awk 'NR==2{print $3"/"$2}')"
+echo "Disk: $(df -h / | awk 'NR==2{print $3"/"$2 " ("$5")"}')"
+echo "Top Processes:"
+ps aux --sort=-%cpu | head -6
+```
+
+**2. Automated Backup Script with Rotation**
+```bash
+#!/bin/bash
+# auto-backup-rotate.sh
+BACKUP_DIR="/backup"
+RETENTION_DAYS=30
+DATE=$(date +%Y%m%d_%H%M%S)
+
+echo "Starting backup rotation..."
+find "$BACKUP_DIR" -name "backup-*.tar.gz" -mtime +$RETENTION_DAYS -delete
+echo "Old backups cleaned."
+
+tar -czf "$BACKUP_DIR/backup-$DATE.tar.gz" /home /etc /var/www
+echo "Backup created: backup-$DATE.tar.gz"
+```
+
+**3. Log Monitor & Alert Script**
+```bash
+#!/bin/bash
+# log-monitor.sh
+LOG_FILE="/var/log/syslog"
+ALERT_FILE="/tmp/log-alerts.txt"
+KEYWORDS=("ERROR" "CRITICAL" "FAILED" "panic")
+
+echo "Monitoring $LOG_FILE for errors..."
+tail -f "$LOG_FILE" | while read line; do
+    for keyword in "${KEYWORDS[@]}"; do
+        if echo "$line" | grep -qi "$keyword"; then
+            echo "[$(date)] $line" >> "$ALERT_FILE"
+            echo "ALERT: $line"
+        fi
+    done
+done
+```
+
+**4. Docker Cleanup Script**
+```bash
+#!/bin/bash
+# docker-cleanup.sh
+echo "Cleaning up Docker..."
+docker system prune -af
+docker volume prune -f
+docker network prune -f
+echo "Docker cleanup complete."
+```
+
+**5. SSL Certificate Monitor**
+```bash
+#!/bin/bash
+# ssl-check.sh
+DOMAINS=("example.com" "api.example.com" "blog.example.com")
+
+for domain in "${DOMAINS[@]}"; do
+    expiry=$(echo | openssl s_client -servername $domain -connect $domain:443 2>/dev/null | openssl x509 -noout -dates | grep 'notAfter')
+    echo "$domain: $expiry"
+done
+```
+
+### **🚀 ONE-COMMAND INSTALLATION SCRIPT**
+
+```bash
+#!/bin/bash
+# install-advanced-tools.sh
+echo "Installing advanced VPS tools..."
+
+# Security
+sudo apt install -y fail2ban clamav lynis rkhunter aide
+
+# Monitoring
+sudo apt install -y htop iotop nethogs glances
+
+# Network
+sudo apt install -y nmap iperf3 mtr tcpdump ngrep
+
+# Storage
+sudo apt install -y ncdu fdupes mc tree
+
+# Development
+sudo apt install -y strace ltrace gdb valgrind jq
+
+# Logging
+sudo apt install -y logwatch goaccess multitail lnav
+
+# Automation
+sudo apt install -y expect parallel tmux screen byobu
+
+# Terminal
+sudo apt install -y zsh fzf bat exa
+
+# Performance
+sudo apt install -y tuned cpulimit
+
+# Web
+sudo apt install -y httpie siege
+
+echo "Advanced tools installation complete!"
+```
+
+### **📊 TOOL CATEGORY SUMMARY**
+
+| Category | Key Tools | Purpose |
+|----------|-----------|---------|
+| **Security** | fail2ban, clamav, lynis | Intrusion prevention, antivirus, auditing |
+| **Monitoring** | netdata, glances, htop | Real-time system monitoring |
+| **Network** | nmap, iperf3, mtr | Discovery, testing, diagnostics |
+| **Storage** | ncdu, fdupes, rsync | Disk analysis, duplicate finding, sync |
+| **Development** | strace, gdb, valgrind | Debugging and profiling |
+| **Logging** | logwatch, goaccess, multitail | Log analysis and monitoring |
+| **Automation** | expect, parallel, tmux | Script automation, parallel execution |
+| **Terminal** | zsh, fzf, bat | Enhanced terminal experience |
+| **Performance** | tuned, cpulimit | System optimization |
+| **Web** | httpie, siege, wget | API testing, load testing |
+
+### **🎯 RECOMMENDED STACKS**
+
+**For Security-Focused VPS:**
+```bash
+sudo apt install -y fail2ban clamav lynis rkhunter aide tcpdump
+```
+
+**For Development VPS:**
+```bash
+sudo apt install -y strace gdb valgrind jq httpie tmux zsh
+```
+
+**For Monitoring VPS:**
+```bash
+sudo apt install -y htop iotop nethogs glances logwatch goaccess
+```
+
+**For Network-Heavy VPS:**
+```bash
+sudo apt install -y nmap iperf3 mtr tcpdump ngrep
+```
+
+**For General Productivity:**
+```bash
+sudo apt install -y tmux zsh fzf bat exa parallel
+```
+
+### **💡 PRO TIPS FOR ADVANCED USAGE**
+
+1. **Combine tools** for powerful workflows:
+   ```bash
+   # Find large files and analyze them
+   find /home -type f -size +100M | fzf | xargs file
+   ```
+
+2. **Create aliases** for common tasks:
+   ```bash
+   # Add to ~/.bashrc
+   alias syscheck='htop; df -h; free -h'
+   alias logs='sudo multitail /var/log/syslog /var/log/auth.log'
+   alias netmon='sudo nethogs eth0'
+   ```
+
+3. **Schedule monitoring** with cron:
+   ```bash
+   # Daily system check
+   0 8 * * * /usr/local/bin/system-health.sh
+   
+   # Weekly security audit
+   0 2 * * 0 /usr/local/bin/security-audit.sh
+   
+   # Hourly backup check
+   0 * * * * /usr/local/bin/backup-check.sh
+   ```
+
+4. **Use Docker** for tool isolation:
+   ```bash
+   # Run tools in containers
+   docker run --rm -it alpine/curl https://example.com
+   docker run --rm -it instrumentisto/nmap -sP 192.168.1.0/24
+   ```
+
+5. **Monitor with dashboards**:
+   - Netdata: http://localhost:19999
+   - Glances web: `glances -w`
+   - Custom dashboard with Grafana
+
+### **🔧 TROUBLESHOOTING COMMANDS**
+
+**Quick Diagnostics:**
+```bash
+# System overview
+dmesg | tail -20  # Recent kernel messages
+journalctl -xe    # System logs
+systemctl status  # Service status
+
+# Network issues
+ip addr show      # Network interfaces
+ss -tulpn         # Open ports
+ping -c 4 8.8.8.8 # Connectivity test
+
+# Disk issues
+smartctl -a /dev/sda  # Disk health
+badblocks -v /dev/sda # Check for bad blocks
+```
+
+**Performance Bottlenecks:**
+```bash
+# CPU
+mpstat -P ALL 1  # CPU usage per core
+pidstat 1        # Process CPU usage
+
+# Memory
+vmstat 1         # Virtual memory stats
+slabtop          # Kernel slab cache
+
+# I/O
+iostat -x 1      # Disk I/O statistics
+iotop -o         # Top I/O processes
+```
+
+### **📚 LEARNING RESOURCES**
+
+1. **Man Pages**: `man <command>`
+2. **TLDR Pages**: `tldr <command>` (install with `sudo apt install tldr`)
+3. **Cheat Sheets**: https://cheat.sh/
+4. **Online Docs

@@ -1,0 +1,458 @@
+HAS_AI:
+            print("AI libraries not installed. Install with: pip3 install torch diffusers transformers")
+            return
+    
+    def load_model(self):
+        """Load the AI model"""
+        if self.pipe is None:
+            print(f"Loading model: {self.model_id}...")
+            self.pipe = StableDiffusionPipeline.from_pretrained(
+                self.model_id,
+                torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32
+            )
+            if torch.cuda.is_available():
+                self.pipe = self.pipe.to("cuda")
+            print("Model loaded successfully!")
+    
+    def generate_image(self, prompt, output_file="ai_generated.png", 
+                      negative_prompt="", steps=50, guidance_scale=7.5):
+        """Generate image from text prompt"""
+        if not HAS_AI:
+            return "AI libraries not installed"
+        
+        self.load_model()
+        
+        print(f"Generating image for prompt: '{prompt}'")
+        print(f"Steps: {steps}, Guidance scale: {guidance_scale}")
+        
+        # Generate image
+        image = self.pipe(
+            prompt=prompt,
+            negative_prompt=negative_prompt,
+            num_inference_steps=steps,
+            guidance_scale=guidance_scale
+        ).images[0]
+        
+        # Save image
+        image.save(output_file)
+        return f"AI-generated image saved to: {output_file}"
+    
+    def generate_variations(self, prompt, num_variations=4, output_dir="ai_variations"):
+        """Generate multiple variations"""
+        if not HAS_AI:
+            return "AI libraries not installed"
+        
+        self.load_model()
+        os.makedirs(output_dir, exist_ok=True)
+        
+        print(f"Generating {num_variations} variations for: '{prompt}'")
+        
+        for i in range(num_variations):
+            image = self.pipe(prompt).images[0]
+            output_file = f"{output_dir}/variation_{i+1}.png"
+            image.save(output_file)
+            print(f"  Saved: {output_file}")
+        
+        return f"Generated {num_variations} variations in {output_dir}/"
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='AI Image Generator')
+    parser.add_argument('prompt', help='Text prompt for image generation')
+    parser.add_argument('--output', default='ai_generated.png', help='Output file')
+    parser.add_argument('--negative-prompt', default='', help='Negative prompt')
+    parser.add_argument('--steps', type=int, default=50, help='Number of steps')
+    parser.add_argument('--guidance-scale', type=float, default=7.5, help='Guidance scale')
+    parser.add_argument('--variations', type=int, default=0, help='Number of variations')
+    
+    args = parser.parse_args()
+    
+    if not HAS_AI:
+        print("Error: AI libraries not installed.")
+        print("Install with: pip3 install torch diffusers transformers")
+        exit(1)
+    
+    generator = AIImageGenerator()
+    
+    if args.variations > 0:
+        result = generator.generate_variations(args.prompt, args.variations)
+    else:
+        result = generator.generate_image(
+            args.prompt, args.output, 
+            args.negative_prompt, args.steps, args.guidance_scale
+        )
+    
+    print(result)
+EOF
+chmod +x /usr/local/bin/ai_image_generator.py
+
+### **🎨 CANVAS & DRAWING TOOLS**
+
+**1. Terminal-Based Canvas Drawing**
+```bash
+cat > /usr/local/bin/terminal_canvas.py << 'EOF'
+#!/usr/bin/env python3
+"""
+Terminal-based canvas drawing tool
+Draw with keyboard or generate ASCII art
+"""
+
+import os
+import sys
+import termios
+import tty
+import curses
+from datetime import datetime
+
+class TerminalCanvas:
+    def __init__(self, width=80, height=24):
+        self.width = width
+        self.height = height
+        self.canvas = [[' ' for _ in range(width)] for _ in range(height)]
+        self.cursor_x = width // 2
+        self.cursor_y = height // 2
+        self.brush = '█'
+        self.colors = {
+            'default': '\033[0m',
+            'black': '\033[30m',
+            'red': '\033[31m',
+            'green': '\033[32m',
+            'yellow': '\033[33m',
+            'blue': '\033[34m',
+            'magenta': '\033[35m',
+            'cyan': '\033[36m',
+            'white': '\033[37m',
+        }
+        self.current_color = 'default'
+    
+    def clear(self):
+        """Clear the canvas"""
+        self.canvas = [[' ' for _ in range(self.width)] for _ in range(self.height)]
+    
+    def draw(self, x, y, char=None):
+        """Draw at position"""
+        if 0 <= x < self.width and 0 <= y < self.height:
+            self.canvas[y][x] = char or self.brush
+    
+    def draw_line(self, x1, y1, x2, y2):
+        """Draw a line"""
+        dx = abs(x2 - x1)
+        dy = abs(y2 - y1)
+        sx = 1 if x1 < x2 else -1
+        sy = 1 if y1 < y2 else -1
+        err = dx - dy
+        
+        while True:
+            self.draw(x1, y1)
+            if x1 == x2 and y1 == y2:
+                break
+            e2 = 2 * err
+            if e2 > -dy:
+                err -= dy
+                x1 += sx
+            if e2 < dx:
+                err += dx
+                y1 += sy
+    
+    def draw_rectangle(self, x1, y1, x2, y2, fill=False):
+        """Draw a rectangle"""
+        for y in range(min(y1, y2), max(y1, y2) + 1):
+            for x in range(min(x1, x2), max(x1, x2) + 1):
+                if fill or y == y1 or y == y2 or x == x1 or x == x2:
+                    self.draw(x, y)
+    
+    def draw_circle(self, cx, cy, radius, fill=False):
+        """Draw a circle"""
+        for y in range(cy - radius, cy + radius + 1):
+            for x in range(cx - radius, cx + radius + 1):
+                dx = x - cx
+                dy = y - cy
+                distance = (dx*dx + dy*dy) ** 0.5
+                if fill:
+                    if distance <= radius + 0.5:
+                        self.draw(x, y)
+                else:
+                    if abs(distance - radius) < 0.5:
+                        self.draw(x, y)
+    
+    def render(self):
+        """Render the canvas to terminal"""
+        os.system('clear')
+        print(f"Terminal Canvas ({self.width}x{self.height}) - Brush: '{self.brush}'")
+        print("Controls: Arrow keys to move, Space to draw, C to clear, Q to quit")
+        print("Brushes: 1=█, 2=▓, 3=▒, 4=░, 5=○, 6=◇, 7=☆")
+        print("Colors: R=red, G=green, B=blue, Y=yellow, M=magenta, C=cyan, W=white")
+        print("-" * self.width)
+        
+        for y in range(self.height):
+            line = ''
+            for x in range(self.width):
+                if x == self.cursor_x and y == self.cursor_y:
+                    line += f'\033[7m{self.brush}\033[0m'  # Inverted for cursor
+                else:
+                    line += self.canvas[y][x]
+            print(line)
+        
+        print("-" * self.width)
+    
+    def save(self, filename=None):
+        """Save canvas to file"""
+        if filename is None:
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"canvas_{timestamp}.txt"
+        
+        with open(filename, 'w') as f:
+            for y in range(self.height):
+                line = ''.join(self.canvas[y])
+                f.write(line + '\n')
+        
+        return f"Canvas saved to {filename}"
+    
+    def interactive(self):
+        """Interactive drawing mode"""
+        print("Starting interactive canvas...")
+        print("Press 'h' for help")
+        
+        # Save terminal settings
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        
+        try:
+            tty.setraw(sys.stdin.fileno())
+            
+            while True:
+                self.render()
+                ch = sys.stdin.read(1)
+                
+                if ch == 'q':  # Quit
+                    break
+                elif ch == 'c':  # Clear
+                    self.clear()
+                elif ch == 's':  # Save
+                    self.save()
+                elif ch == '\x1b':  # Escape sequence (arrow keys)
+                    seq = sys.stdin.read(2)
+                    if seq == '[A':  # Up
+                        self.cursor_y = max(0, self.cursor_y - 1)
+                    elif seq == '[B':  # Down
+                        self.cursor_y = min(self.height - 1, self.cursor_y + 1)
+                    elif seq == '[C':  # Right
+                        self.cursor_x = min(self.width - 1, self.cursor_x + 1)
+                    elif seq == '[D':  # Left
+                        self.cursor_x = max(0, self.cursor_x - 1)
+                elif ch == ' ':  # Draw
+                    self.draw(self.cursor_x, self.cursor_y)
+                elif ch == '1': self.brush = '█'
+                elif ch == '2': self.brush = '▓'
+                elif ch == '3': self.brush = '▒'
+                elif ch == '4': self.brush = '░'
+                elif ch == '5': self.brush = '○'
+                elif ch == '6': self.brush = '◇'
+                elif ch == '7': self.brush = '☆'
+                elif ch == 'r': self.current_color = 'red'
+                elif ch == 'g': self.current_color = 'green'
+                elif ch == 'b': self.current_color = 'blue'
+                elif ch == 'y': self.current_color = 'yellow'
+                elif ch == 'm': self.current_color = 'magenta'
+                elif ch == 'c': self.current_color = 'cyan'
+                elif ch == 'w': self.current_color = 'white'
+                elif ch == 'h':  # Help
+                    print("\nHelp:")
+                    print("  Arrow keys: Move cursor")
+                    print("  Space: Draw at cursor")
+                    print("  1-7: Change brush")
+                    print("  r,g,b,y,m,c,w: Change color")
+                    print("  c: Clear canvas")
+                    print("  s: Save canvas")
+                    print("  q: Quit")
+                    input("Press Enter to continue...")
+        
+        finally:
+            # Restore terminal settings
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        
+        print("\nExiting interactive mode.")
+
+if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Terminal Canvas Drawing Tool')
+    parser.add_argument('--width', type=int, default=80, help='Canvas width')
+    parser.add_argument('--height', type=int, default=24, help='Canvas height')
+    parser.add_argument('--interactive', action='store_true', help='Interactive mode')
+    parser.add_argument('--draw', help='Draw command (e.g., "line 10,10,50,10")')
+    parser.add_argument('--save', help='Save to file')
+    
+    args = parser.parse_args()
+    
+    canvas = TerminalCanvas(args.width, args.height)
+    
+    if args.interactive:
+        canvas.interactive()
+    elif args.draw:
+        # Parse draw command
+        parts = args.draw.split()
+        if parts[0] == 'line' and len(parts) == 2:
+            coords = list(map(int, parts[1].split(',')))
+            if len(coords) == 4:
+                canvas.draw_line(*coords)
+        elif parts[0] == 'rect' and len(parts) == 2:
+            coords = list(map(int, parts[1].split(',')))
+            if len(coords) == 4:
+                canvas.draw_rectangle(*coords)
+        elif parts[0] == 'circle' and len(parts) == 2:
+            coords = list(map(int, parts[1].split(',')))
+            if len(coords) == 3:
+                canvas.draw_circle(*coords)
+        
+        canvas.render()
+        
+        if args.save:
+            print(canvas.save(args.save))
+        else:
+            print(canvas.save())
+    else:
+        print("Use --interactive for drawing or --draw with a command")
+EOF
+chmod +x /usr/local/bin/terminal_canvas.py
+```
+
+**2. Web-Based Canvas (HTML/JavaScript)**
+```bash
+cat > /var/www/news-site/public/canvas_tool.html << 'EOF'
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Web Canvas Drawing Tool</title>
+    <meta charset="utf-8">
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .toolbar {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .tool-btn {
+            background: #444;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .tool-btn:hover {
+            background: #555;
+        }
+        .tool-btn.active {
+            background: #667eea;
+        }
+        .color-picker {
+            display: flex;
+            gap: 5px;
+        }
+        .color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        .color.active {
+            border-color: white;
+        }
+        .canvas-container {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        canvas {
+            display: block;
+            background: white;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: crosshair;
+        }
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .control-group {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 10px;
+        }
+        input[type="range"] {
+            width: 100%;
+        }
+        .save-options {
+            background: #2d2d2d;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .preview {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .preview img {
+            max-width: 100%;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎨 Web Canvas Drawing Tool</h1>
+            <p>Draw, create, and export your artwork</p>
+        </div>
+        
+        <div class="toolbar">
+            <button class="tool-btn active" data-tool="brush">🖌️ Brush</button>
+            <button class="tool-btn" data-tool="line">📏 Line</button>
+            <button class="tool-btn" data-tool="rectangle">⬜ Rectangle</button>
+            <button class="tool-btn" data-tool="circle">⭕ Circle</button>
+            <button class="tool-btn" data-tool="eraser">🧽 Eraser</button>
+            <button class="tool-btn" data-tool="text">🔤 Text</button>
+            
+            <div class="color-picker">
+                <div class="color active" style="background: #000000;" data-color="#000000"></div>
+                <div class="color" style="background: #ff0000;" data-color="#ff0000"></div>
+                <div class="color" style="background: #00ff00;" data-color="#00ff00"></div>
+                <div class="color" style="background: #0000ff;" data-color="#0000ff"></div>
+                <div class="color" style="background: #ffff00;" data-color="#ffff00"></div>
+                <div class="color" style="background: #ff00ff;" data-color="#ff00ff"></div>
+                <div class="color" style="background: #00ffff;" data-color="#00ffff"></div>
+                <div class="color" style="background: #ffffff;" data-color="#ffffff"></div>
+            </div>
+            
+            <button id="clear" class="tool-btn">🗑️ Clear</button>
+            <button id

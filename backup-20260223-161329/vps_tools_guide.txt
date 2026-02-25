@@ -1,0 +1,368 @@
+# 🖥️ COMPLETE VPS TERMINAL TOOLS MASTER GUIDE
+## All Essential Tools, Dependencies & Installation Commands
+
+## 🚀 QUICK START - ONE COMMAND INSTALLATION
+
+### **Complete VPS Setup (All Tools)**
+```bash
+# Copy and paste this complete command:
+sudo apt update && sudo apt upgrade -y && \
+sudo apt install -y htop glances nmon iotop lm-sensors dstat net-tools iproute2 nmap traceroute mtr iftop nethogs curl wget mailutils postfix fail2ban ufw openssh-server logwatch lynis chkrootkit rkhunter python3 python3-pip python3-venv build-essential git nodejs default-jdk docker.io mysql-client postgresql-client sqlite3 redis-tools mongodb-clients rsync mc mlocate tree ncdu cron screen tmux at vim nano gawk sed gzip bzip2 zip unzip p7zip-full file snapd flatpak alien zsh bash-completion lsd fish ranger fzf neofetch screenfetch && \
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && \
+sudo chmod +x /usr/local/bin/docker-compose && \
+sudo usermod -aG docker $USER && \
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash - && \
+sudo apt install -y nodejs && \
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+```
+
+### **Minimal Essential Setup**
+```bash
+# For basic VPS operation
+sudo apt update && sudo apt upgrade -y && \
+sudo apt install -y htop nano vim git curl wget net-tools ufw fail2ban python3 python3-pip build-essential screen tmux
+```
+
+---
+
+## 📋 CATEGORY SUMMARY
+
+### **1. SYSTEM MONITORING (Must Have)**
+- **htop** - Interactive process viewer
+- **glances** - Comprehensive system monitor
+- **nmon** - Performance monitoring
+- **iotop** - Disk I/O monitoring
+- **lm-sensors** - Hardware temperature
+- **dstat** - Versatile resource stats
+
+### **2. NETWORK TOOLS (Essential)**
+- **net-tools** - ifconfig, netstat, route
+- **iproute2** - Modern ip command
+- **nmap** - Network scanner
+- **traceroute/mtr** - Network path analysis
+- **iftop/nethogs** - Bandwidth monitoring
+- **curl/wget** - HTTP tools
+
+### **3. SECURITY TOOLS (Critical)**
+- **fail2ban** - Brute force protection
+- **ufw** - Firewall management
+- **openssh-server** - Secure SSH
+- **lynis** - Security auditing
+- **chkrootkit/rkhunter** - Malware detection
+
+### **4. DEVELOPMENT TOOLS**
+- **python3/pip** - Python programming
+- **nodejs/npm** - JavaScript runtime
+- **git** - Version control
+- **docker/docker-compose** - Containerization
+- **build-essential** - C/C++ compiler
+
+### **5. FILE MANAGEMENT**
+- **rsync** - Remote file sync
+- **mc** - File manager
+- **tree** - Directory tree
+- **ncdu** - Disk usage analyzer
+- **locate** - Fast file search
+
+### **6. TEXT PROCESSING**
+- **vim/nano** - Text editors
+- **grep/awk/sed** - Text manipulation
+- **less/more** - File viewers
+- **sort/uniq/wc** - Text analysis
+
+### **7. TERMINAL ENHANCEMENTS**
+- **zsh/oh-my-zsh** - Better shell
+- **tmux/screen** - Terminal multiplexer
+- **fzf** - Fuzzy finder
+- **neofetch** - System info display
+
+---
+
+## 🎯 TOP 10 MOST USEFUL COMMANDS
+
+### **1. System Health Check**
+```bash
+# One command to check everything
+echo "=== SYSTEM HEALTH CHECK ===" && \
+echo "Uptime:" && uptime && \
+echo -e "\nMemory:" && free -h && \
+echo -e "\nDisk:" && df -h && \
+echo -e "\nCPU:" && lscpu | grep "Model name" && \
+echo -e "\nLoad:" && cat /proc/loadavg && \
+echo -e "\nTop Processes:" && ps aux --sort=-%cpu | head -5
+```
+
+### **2. Find Large Files**
+```bash
+# Find files larger than 100MB
+find / -type f -size +100M -exec ls -lh {} \; 2>/dev/null | sort -k5 -hr
+```
+
+### **3. Monitor Network Connections**
+```bash
+# Real-time network monitoring
+watch -n 1 "netstat -tulpn | grep -E '(LISTEN|ESTABLISHED)'"
+```
+
+### **4. Check Failed Logins**
+```bash
+# Security monitoring
+sudo tail -100 /var/log/auth.log | grep -i "failed\|invalid"
+```
+
+### **5. Disk Space by Directory**
+```bash
+# Find what's using space
+du -h --max-depth=1 / | sort -hr
+```
+
+### **6. Process Tree View**
+```bash
+# See parent-child processes
+pstree -p
+```
+
+### **7. Memory Usage by Process**
+```bash
+# Top memory consumers
+ps aux --sort=-%mem | head -10
+```
+
+### **8. Open Files by Process**
+```bash
+# What files are open
+lsof -i :80  # Files using port 80
+lsof -p PID  # Files opened by process
+```
+
+### **9. System Logs in Real-time**
+```bash
+# Monitor multiple logs
+tail -f /var/log/syslog /var/log/auth.log /var/log/nginx/access.log
+```
+
+### **10. Backup Directory**
+```bash
+# Simple backup with timestamp
+tar -czf backup_$(date +%Y%m%d_%H%M%S).tar.gz /path/to/backup
+```
+
+---
+
+## 🔧 INSTALLATION SCRIPTS
+
+### **Web Server Setup (Nginx + PHP + MySQL)**
+```bash
+#!/bin/bash
+# Save as: setup_webserver.sh
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y nginx mysql-server php-fpm php-mysql php-cli php-curl php-gd php-mbstring php-xml php-zip
+sudo ufw allow 'Nginx Full'
+sudo systemctl start nginx
+sudo systemctl enable nginx
+sudo systemctl start mysql
+sudo systemctl enable mysql
+sudo mysql_secure_installation
+echo "Web server setup complete!"
+```
+
+### **Python Development Environment**
+```bash
+#!/bin/bash
+# Save as: setup_python.sh
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y python3 python3-pip python3-venv python3-dev
+pip3 install --upgrade pip
+pip3 install virtualenv virtualenvwrapper
+echo "export WORKON_HOME=$HOME/.virtualenvs" >> ~/.bashrc
+echo "export VIRTUALENVWRAPPER_PYTHON=/usr/bin/python3" >> ~/.bashrc
+echo "source /usr/local/bin/virtualenvwrapper.sh" >> ~/.bashrc
+source ~/.bashrc
+echo "Python development environment ready!"
+```
+
+### **Node.js Development Environment**
+```bash
+#!/bin/bash
+# Save as: setup_nodejs.sh
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs
+sudo npm install -g npm@latest
+sudo npm install -g yarn
+sudo npm install -g nodemon pm2
+echo "Node.js version: $(node --version)"
+echo "npm version: $(npm --version)"
+echo "Node.js environment ready!"
+```
+
+### **Docker Development Environment**
+```bash
+#!/bin/bash
+# Save as: setup_docker.sh
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y docker.io
+sudo systemctl start docker
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
+sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+echo "Docker version: $(docker --version)"
+echo "Docker Compose version: $(docker-compose --version)"
+echo "Docker environment ready! Log out and back in for group changes."
+```
+
+---
+
+## 🛠️ TROUBLESHOOTING COMMANDS
+
+### **Service Won't Start**
+```bash
+# Check service status
+sudo systemctl status service_name
+# View logs
+sudo journalctl -u service_name -f
+# Check dependencies
+systemctl list-dependencies service_name
+```
+
+### **Disk Full**
+```bash
+# Find large files
+sudo find / -type f -size +100M 2>/dev/null | xargs ls -lh
+# Clean apt cache
+sudo apt clean
+sudo apt autoremove
+# Clean old logs
+sudo journalctl --vacuum-time=7d
+```
+
+### **High CPU Usage**
+```bash
+# Find CPU hog
+top -b -n 1 | head -20
+# Continuous monitoring
+watch -n 1 'ps aux --sort=-%cpu | head -10'
+# Check for zombie processes
+ps aux | grep 'Z'
+```
+
+### **Network Issues**
+```bash
+# Test connectivity
+ping -c 4 8.8.8.8
+# Check DNS
+nslookup google.com
+dig google.com
+# Check routing
+traceroute google.com
+# Check firewall
+sudo ufw status verbose
+```
+
+### **Permission Issues**
+```bash
+# Check file permissions
+ls -la /path/to/file
+# Fix ownership
+sudo chown user:group /path/to/file
+# Fix permissions
+sudo chmod 755 /path/to/file
+# Check SELinux/AppArmor
+sudo aa-status
+getenforce
+```
+
+---
+
+## 📚 LEARNING RESOURCES
+
+### **Command Manuals**
+```bash
+man command          # Full manual
+command --help       # Quick help
+info command         # Alternative manual
+tldr command         # Simplified examples
+```
+
+### **Online Resources**
+- **Linux Journey** - Free interactive Linux tutorial
+- **Explain Shell** - Explains shell commands
+- **Linux Command Library** - Command reference
+- **SS64** - Command reference for multiple shells
+- **The Linux Documentation Project** - Comprehensive guides
+
+### **Practice Commands**
+```bash
+# Create practice environment
+mkdir ~/practice && cd ~/practice
+# Create sample files
+for i in {1..10}; do echo "File $i content" > file$i.txt; done
+# Practice commands safely here
+```
+
+---
+
+## 🎉 CONCLUSION
+
+### **Daily Maintenance Commands**
+```bash
+# Daily check
+sudo apt update
+sudo apt upgrade -y
+sudo apt autoremove -y
+sudo apt clean
+df -h
+free -h
+```
+
+### **Weekly Maintenance**
+```bash
+# Weekly tasks
+sudo updatedb
+sudo fail2ban-client status
+sudo ufw status
+sudo lynis audit system --quick
+```
+
+### **Security Checklist**
+- [ ] Firewall enabled (ufw)
+- [ ] Fail2ban running
+- [ ] SSH key authentication only
+- [ ] Regular updates enabled
+- [ ] Strong passwords
+- [ ] Limited sudo access
+- [ ] Log monitoring
+- [ ] Backup system in place
+
+### **Performance Checklist**
+- [ ] Monitoring tools installed
+- [ ] Log rotation configured
+- [ ] Swap space configured
+- [ ] Services optimized
+- [ ] Unused packages removed
+- [ ] Regular maintenance scheduled
+
+---
+
+## 📥 DOWNLOAD THIS GUIDE
+
+All commands and scripts are available at:
+- `/tmp/vps_tools_guide.md` - Complete guide
+- `/tmp/vps_tools_guide_part2.md` - Additional commands
+- `/tmp/vps_tools_complete.md` - This summary
+
+**To save this guide:**
+```bash
+# Copy to your home directory
+cp /tmp/vps_tools_complete.md ~/vps_guide.md
+# Or create a script
+cat /tmp/vps_tools_complete.md > ~/vps_master_guide.txt
+```
+
+**Remember:** Always test commands in a safe environment before running on production systems!
+
+---
+**Created by:** Nexus AI Assistant  
+**Date:** February 2026  
+**For:** VPS Terminal Mastery  
+**Status:** Complete Reference Guide

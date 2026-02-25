@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NewsHub | Article</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --gray: #64748b;
+            --gray-light: #e2e8f0;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --radius: 8px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+        
+        .logo {
+            font-family: 'Poppins', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo i {
+            color: var(--secondary);
+        }
+        
+        .back-btn {
+            background: var(--primary);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: var(--transition);
+        }
+        
+        .back-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        /* Article Container */
+        .article-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        
+        .article-header {
+            margin-bottom: 40px;
+        }
+        
+        .article-category {
+            display: inline-block;
+            padding: 8px 16px;
+            background: var(--gray-light);
+            color: var(--dark);
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        
+        .article-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5em;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            color: var(--dark);
+        }
+        
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            color: var(--gray);
+            font-size: 0.95em;
+            margin-bottom: 30px;
+        }
+        
+        .author-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .author-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+        
+        .article-image {
+            width: 100%;
+            height: 400px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: var(--radius);
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 4em;
+        }
+        
+        .article-content {
+            font-size: 1.1em;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+        
+        .article-content p {
+            margin-bottom: 20px;
+        }
+        
+        .article-content h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.8em;
+            margin: 30px 0 15px;
+            color: var(--dark);
+        }
+        
+        .article-content h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.4em;
+            margin: 25px 0 10px;
+            color: var(--dark);
+        }
+        
+        .article-footer {
+            border-top: 1px solid var(--gray-light);
+            padding-top: 30px;
+            margin-top: 40px;
+        }
+        
+        .fact-check-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #d1fae5;
+            color: #065f46;
+            border-radius: var(--radius);
+            font-weight: 500;
+            margin-bottom: 20px;
+        }
+        
+        .source-info {
+            color: var(--gray);
+            font-size: 0.9em;
+            margin-top: 20px;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+            font-size: 1.2em;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--danger);
+            font-size: 1.2em;
+        }
+        
+        /* Footer */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 60px 20px 30px;
+            margin-top: 60px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+        
+        .footer-section h4 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            color: white;
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: var(--gray-light);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray);
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .article-title {
+                font-size: 2em;
+            }
+            
+            .article-image {
+                height: 250px;
+            }
+            
+            .article-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <i class="fas fa-newspaper"></i>
+                NewsHub
+            </a>
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i>
+                Back to News
+            </a>
+        </div>
+    </header>
+
+    <!-- Article Content -->
+    <main class="article-container">
+        <div id="article-content">
+            <div class="loading">Loading article...</div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>NewsHub</h4>
+                <p>Providing free, accessible news to everyone without registration barriers.</p>
+            </div>
+            <div class="footer-section">
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="/">Home</a></li>
+                    <li><a href="#latest">Latest News</a></li>
+                    <li><a href="#categories">Categories</a></li>
+                    <li><a href="#fact-check">Fact Check</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Features</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Public Access</a></li>
+                    <li><a href="#">No Registration</a></li>
+                    <li><a href="#">Fact-Checked</a></li>
+                    <li><a href="#">Multiple Sources</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 NewsHub. All news content freely accessible to the public.</p>
+            <p style="margin-top: 10px; font-size: 0.8em;">
+                <i class="fas fa-unlock"></i> No login required | 
+                <i class="fas fa-user-friends"></i> 100% Public Access
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Get slug from URL
+        function getSlugFromURL() {
+            const path = window.location.pathname;
+            if (path.startsWith('/post/')) {
+                return path.substring(6); // Remove '/post/' prefix
+            }
+            return null;
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        // Get fact check badge color
+        function getFactCheckColor(status) {
+            switch(status) {
+                case 'verified': return {bg: '#d1fae5', color: '#065f46', text: 'Verified', icon: 'fa-check-circle'};
+                case 'disputed': return {bg: '#fef3c7', color: '#92400e', text: 'Disputed', icon: 'fa-exclamation-triangle'};
+                case 'false': return {bg: '#fee2e2', color: '#991b1b', text: 'False', icon: 'fa-times-circle'};
+                default: return {bg: '#e5e7eb', color: '#374151', text: 'Unverified', icon: 'fa-question-circle'};
+            }
+        }
+        
+        // Load article
+        async function loadArticle() {
+            console.log('loadArticle called');
+            const slug = getSlugFromURL();
+            console.log('Slug extracted:', slug);
+            
+            if (!slug) {
+                console.log('No slug found in URL');
+                document.getElementById('article-content').innerHTML = `
+                    <div class="error">
+                        <h2>Article Not Found</h2>
+                        <p>No article slug specified in URL.</p>
+                        <p>Current URL: ${window.location.href}</p>
+                        <p>Pathname: ${window.location.pathname}</p>
+                        <a href="/" class="back-btn" style="display: inline-block; margin-top: 20px;">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to News
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            try {
+                console.log(`Fetching article from: /api/posts/${slug}`);
+                const response = await fetch(`/api/posts/${slug}`);
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`Article not found (HTTP ${response.status})`);
+                }
+                
+                const article = await response.json();
+                console.log('Article loaded:', article.title);
+                
+                // Update page title
+                document.title = `NewsHub | ${article.title}`;
+                
+                // Get fact check info
+                const factCheck = getFactCheckColor(article.fact_check_status);
+                
+                // Format reading time
+                const readingTime = article.reading_time || Math.ceil(article.content.length / 1000);
+                
+                // Create article HTML
+                const articleHTML = `
+                    <div class="article-header">
+                        <span class="article-category" style="background: ${article.category_color || '#e2e8f0'}; color: ${article.category_color ? 'white' : '#1e293b'}">
+                            ${article.category_name || 'General'}
+                        </span>
+                        <h1 class="article-title">${article.title}</h1>
+                        <div class="article-meta">
+                            <div class="author-info">
+                                <div class="author-avatar">
+                                    ${article.author_name ? article.author_name.charAt(0).toUpperCase() : 'A'}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 500;">${article.author_name || 'Author'}</div>
+                                    <div style="font-size: 0.85em;">${formatDate(article.published_at)}</div>
+                                </div>
+                            </div>
+                            <div>
+                                <i class="far fa-clock"></i> ${readingTime} min read
+                            </div>
+                            <div>
+                                <i class="far fa-eye"></i> ${article.view_count || 0} views
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="article-image">
+                        <i class="fas fa-newspaper"></i>
+                    </div>
+                    
+                    <div class="article-content">
+                        ${article.content.split('\n').map(paragraph => `<p>${paragraph}</p>`).join('')}
+                    </div>
+                    
+                    <div class="article-footer">
+                        <div class="fact-check-badge" style="background: ${factCheck.bg}; color: ${factCheck.color};">
+                            <i class="fas ${factCheck.icon}"></i>
+                            ${factCheck.text}
+                        </div>
+                        
+                        ${article.fact_check_notes ? `
+                            <div style="margin-top: 10px; padding: 15px; background: #f8fafc; border-radius: var(--radius);">
+                                <strong>Fact Check Notes:</strong> ${article.fact_check_notes}
+                            </div>
+                        ` : ''}
+                        
+                        ${article.source_name || article.source_url ? `
+                            <div class="source-info">
+                                <strong>Source:</strong> 
+                                ${article.source_name ? article.source_name : ''}
+                                ${article.source_url ? `<br><a href="${article.source_url}" target="_blank" style="color: var(--primary);">${article.source_url}</a>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+                
+                document.getElementById('article-content').innerHTML = articleHTML;
+                
+            } catch (error) {
+                console.error('Error loading article:', error);
+                document.getElementById('article-content').innerHTML = `
+                    <div class="error">
+                        <h2>Article Not Found</h2>
+                        <p>The article you're looking for doesn't exist or couldn't be loaded.</p>
+                        <p>Error: ${error.message}</p>
+                        <p>Slug: ${slug}</p>
+                        <p>Full URL: ${window.location.href}</p>
+                        <a href="/" class="back-btn" style="display: inline-block; margin-top: 20px;">
+                            <i class="fas fa-arrow-left"></i>
+                            Back to News
+                        </a>
+                    </div>
+                `;
+            }
+        }
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadArticle);
+    </script>
+</body>
+</html>

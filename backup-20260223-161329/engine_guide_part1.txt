@@ -1,0 +1,461 @@
+# 🚀 POWERFUL ENGINE & CREATIVE TOOLS SUITE
+
+## 🎯 COMPREHENSIVE TOOLKIT FOR SEARCH, PDF, PHOTO, CANVAS & AUTOMATION
+
+### **🔍 ADVANCED SEARCH ENGINES & DATA MINING**
+
+**1. DDGS (DuckDuckGo Search) - Already Installed**
+```bash
+# Python usage
+python3 -c "from ddgs import DDGS; ddgs = DDGS(); results = ddgs.text('search query', max_results=10); print(results)"
+```
+
+**2. Google Custom Search Engine**
+```bash
+# Install required packages
+pip3 install google-api-python-client beautifulsoup4
+
+# Create search script
+cat > /usr/local/bin/google_search.py << 'EOF'
+#!/usr/bin/env python3
+import requests
+from bs4 import BeautifulSoup
+import sys
+
+def google_search(query, num_results=10):
+    url = f"https://www.google.com/search?q={query}&num={num_results}"
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    results = []
+    for g in soup.find_all('div', class_='g'):
+        title = g.find('h3')
+        link = g.find('a')
+        if title and link:
+            results.append({
+                'title': title.text,
+                'link': link['href'],
+                'snippet': g.find('div', class_='VwiC3b').text if g.find('div', class_='VwiC3b') else ''
+            })
+    return results
+
+if __name__ == "__main__":
+    query = " ".join(sys.argv[1:])
+    results = google_search(query)
+    for i, r in enumerate(results, 1):
+        print(f"{i}. {r['title']}")
+        print(f"   {r['link']}")
+        print(f"   {r['snippet'][:100]}...")
+        print()
+EOF
+chmod +x /usr/local/bin/google_search.py
+```
+
+**3. Advanced Web Scraper Engine**
+```bash
+cat > /usr/local/bin/advanced_scraper.py << 'EOF'
+#!/usr/bin/env python3
+import requests
+from bs4 import BeautifulSoup
+import json
+import time
+from urllib.parse import urljoin, urlparse
+import argparse
+
+class AdvancedScraper:
+    def __init__(self):
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+        })
+    
+    def scrape_url(self, url, extract_images=False, extract_links=False):
+        """Scrape a URL with multiple extraction options"""
+        try:
+            response = self.session.get(url, timeout=10)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            
+            data = {
+                'url': url,
+                'title': soup.title.string if soup.title else '',
+                'text': soup.get_text()[:5000],
+                'timestamp': time.time()
+            }
+            
+            if extract_images:
+                data['images'] = [urljoin(url, img['src']) for img in soup.find_all('img') if img.get('src')]
+            
+            if extract_links:
+                data['links'] = [urljoin(url, a['href']) for a in soup.find_all('a') if a.get('href')]
+            
+            return data
+        except Exception as e:
+            return {'error': str(e), 'url': url}
+    
+    def search_and_scrape(self, query, engine='ddgs', max_results=5):
+        """Search and scrape results"""
+        if engine == 'ddgs':
+            from ddgs import DDGS
+            ddgs = DDGS()
+            results = ddgs.text(query, max_results=max_results)
+            scraped_data = []
+            for result in results:
+                scraped = self.scrape_url(result['href'])
+                scraped['search_result'] = result
+                scraped_data.append(scraped)
+                time.sleep(1)  # Be polite
+            return scraped_data
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Advanced Web Scraper')
+    parser.add_argument('--url', help='URL to scrape')
+    parser.add_argument('--search', help='Search query')
+    parser.add_argument('--output', default='scraped_data.json', help='Output file')
+    args = parser.parse_args()
+    
+    scraper = AdvancedScraper()
+    
+    if args.url:
+        data = scraper.scrape_url(args.url, extract_images=True, extract_links=True)
+        with open(args.output, 'w') as f:
+            json.dump(data, f, indent=2)
+        print(f"Data saved to {args.output}")
+    
+    elif args.search:
+        data = scraper.search_and_scrape(args.search)
+        with open(args.output, 'w') as f:
+            json.dump(data, f, indent=2)
+        print(f"Search results saved to {args.output}")
+EOF
+chmod +x /usr/local/bin/advanced_scraper.py
+```
+
+**4. Multi-Search Engine Aggregator**
+```bash
+cat > /usr/local/bin/multi_search.py << 'EOF'
+#!/usr/bin/env python3
+import requests
+import json
+import time
+from concurrent.futures import ThreadPoolExecutor
+from ddgs import DDGS
+
+class MultiSearchEngine:
+    def __init__(self):
+        self.engines = {
+            'ddgs': self.search_ddgs,
+            'brave': self.search_brave,
+            'youtube': self.search_youtube,
+            'wikipedia': self.search_wikipedia
+        }
+    
+    def search_ddgs(self, query, max_results=10):
+        ddgs = DDGS()
+        return list(ddgs.text(query, max_results=max_results))
+    
+    def search_brave(self, query, max_results=10):
+        # Using Brave Search API (requires API key)
+        # For now, using DDGS as fallback
+        return self.search_ddgs(query, max_results)
+    
+    def search_youtube(self, query, max_results=10):
+        url = f"https://www.youtube.com/results?search_query={query}"
+        # This is a simplified version - would need YouTube API for full results
+        return [{'title': f'YouTube: {query}', 'href': url}]
+    
+    def search_wikipedia(self, query, max_results=10):
+        url = f"https://en.wikipedia.org/w/api.php"
+        params = {
+            'action': 'query',
+            'format': 'json',
+            'list': 'search',
+            'srsearch': query,
+            'srlimit': max_results
+        }
+        try:
+            response = requests.get(url, params=params, timeout=10)
+            data = response.json()
+            results = []
+            for item in data['query']['search']:
+                results.append({
+                    'title': item['title'],
+                    'href': f"https://en.wikipedia.org/wiki/{item['title'].replace(' ', '_')}",
+                    'snippet': item['snippet']
+                })
+            return results
+        except:
+            return []
+    
+    def search_all(self, query, max_results=10):
+        """Search all engines in parallel"""
+        results = {}
+        with ThreadPoolExecutor() as executor:
+            futures = {}
+            for name, func in self.engines.items():
+                future = executor.submit(func, query, max_results)
+                futures[future] = name
+            
+            for future in futures:
+                try:
+                    results[futures[future]] = future.result(timeout=10)
+                except Exception as e:
+                    results[futures[future]] = [{'error': str(e)}]
+        
+        return results
+
+if __name__ == "__main__":
+    import sys
+    query = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else "latest technology news"
+    
+    engine = MultiSearchEngine()
+    results = engine.search_all(query, max_results=5)
+    
+    for engine_name, engine_results in results.items():
+        print(f"\n=== {engine_name.upper()} ===")
+        for i, result in enumerate(engine_results[:3], 1):
+            print(f"{i}. {result.get('title', 'No title')}")
+            if 'href' in result:
+                print(f"   {result['href']}")
+            if 'snippet' in result:
+                print(f"   {result['snippet'][:100]}...")
+            print()
+EOF
+chmod +x /usr/local/bin/multi_search.py
+```
+
+### **📄 POWERFUL PDF ENGINE**
+
+**1. PDF Processing Suite**
+```bash
+# Install comprehensive PDF tools
+sudo apt install -y pdftk poppler-utils ghostscript qpdf pdfgrep pdfjam pdfposter pdftotext
+
+# Additional Python PDF libraries
+pip3 install PyPDF2 pdfplumber reportlab fpdf pdf2image
+```
+
+**2. Advanced PDF Manipulation Script**
+```bash
+cat > /usr/local/bin/pdf_engine.py << 'EOF'
+#!/usr/bin/env python3
+import PyPDF2
+import pdfplumber
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+from reportlab.lib.utils import ImageReader
+import os
+import argparse
+from PIL import Image
+import io
+
+class PDFEngine:
+    def __init__(self):
+        pass
+    
+    def merge_pdfs(self, input_files, output_file):
+        """Merge multiple PDF files"""
+        merger = PyPDF2.PdfMerger()
+        for pdf in input_files:
+            merger.append(pdf)
+        merger.write(output_file)
+        merger.close()
+        return f"Merged {len(input_files)} PDFs into {output_file}"
+    
+    def split_pdf(self, input_file, output_prefix, pages_per_file=1):
+        """Split PDF into multiple files"""
+        with open(input_file, 'rb') as file:
+            pdf = PyPDF2.PdfReader(file)
+            total_pages = len(pdf.pages)
+            
+            for i in range(0, total_pages, pages_per_file):
+                merger = PyPDF2.PdfMerger()
+                end_page = min(i + pages_per_file, total_pages)
+                
+                for page_num in range(i, end_page):
+                    merger.append(input_file, pages=(page_num, page_num+1))
+                
+                output_file = f"{output_prefix}_{i//pages_per_file + 1}.pdf"
+                merger.write(output_file)
+                merger.close()
+        
+        return f"Split into {(total_pages + pages_per_file - 1) // pages_per_file} files"
+    
+    def extract_text(self, input_file, output_file=None):
+        """Extract text from PDF"""
+        text = ""
+        with pdfplumber.open(input_file) as pdf:
+            for page in pdf.pages:
+                text += page.extract_text() + "\n\n"
+        
+        if output_file:
+            with open(output_file, 'w', encoding='utf-8') as f:
+                f.write(text)
+            return f"Text extracted to {output_file}"
+        return text
+    
+    def extract_images(self, input_file, output_dir="extracted_images"):
+        """Extract images from PDF"""
+        os.makedirs(output_dir, exist_ok=True)
+        image_count = 0
+        
+        with pdfplumber.open(input_file) as pdf:
+            for page_num, page in enumerate(pdf.pages, 1):
+                images = page.images
+                for img in images:
+                    if img['stream']:
+                        try:
+                            image = Image.open(io.BytesIO(img['stream'].get_data()))
+                            image.save(f"{output_dir}/page_{page_num}_img_{image_count}.png")
+                            image_count += 1
+                        except:
+                            continue
+        
+        return f"Extracted {image_count} images to {output_dir}/"
+    
+    def create_pdf_from_images(self, image_files, output_file, title="Generated PDF"):
+        """Create PDF from images"""
+        c = canvas.Canvas(output_file, pagesize=letter)
+        width, height = letter
+        
+        for i, img_file in enumerate(image_files):
+            if i > 0:
+                c.showPage()
+            
+            # Add title on first page
+            if i == 0:
+                c.setFont("Helvetica-Bold", 16)
+                c.drawString(50, height - 50, title)
+                c.setFont("Helvetica", 12)
+                c.drawString(50, height - 80, f"Image {i+1} of {len(image_files)}")
+            
+            # Add image
+            try:
+                img = ImageReader(img_file)
+                img_width, img_height = img.getSize()
+                scale = min(width/img_width * 0.8, (height-100)/img_height * 0.8)
+                c.drawImage(img_file, 50, 100, 
+                           width=img_width*scale, 
+                           height=img_height*scale)
+            except:
+                c.drawString(50, height//2, f"Could not load image: {img_file}")
+        
+        c.save()
+        return f"Created PDF with {len(image_files)} images"
+    
+    def add_watermark(self, input_file, watermark_text, output_file):
+        """Add text watermark to PDF"""
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import letter
+        from PyPDF2 import PdfReader, PdfWriter
+        import io
+        
+        # Create watermark PDF
+        packet = io.BytesIO()
+        can = canvas.Canvas(packet, pagesize=letter)
+        can.setFont("Helvetica", 60)
+        can.setFillColorRGB(0.5, 0.5, 0.5, alpha=0.3)  # Gray, semi-transparent
+        can.rotate(45)
+        can.drawString(200, 100, watermark_text)
+        can.save()
+        
+        # Move to beginning
+        packet.seek(0)
+        watermark_pdf = PdfReader(packet)
+        
+        # Apply watermark to each page
+        reader = PdfReader(input_file)
+        writer = PdfWriter()
+        
+        for i in range(len(reader.pages)):
+            page = reader.pages[i]
+            page.merge_page(watermark_pdf.pages[0])
+            writer.add_page(page)
+        
+        with open(output_file, 'wb') as output:
+            writer.write(output)
+        
+        return f"Watermarked PDF saved as {output_file}"
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Advanced PDF Engine')
+    subparsers = parser.add_subparsers(dest='command', help='Command to execute')
+    
+    # Merge command
+    merge_parser = subparsers.add_parser('merge', help='Merge PDFs')
+    merge_parser.add_argument('input_files', nargs='+', help='Input PDF files')
+    merge_parser.add_argument('--output', default='merged.pdf', help='Output file')
+    
+    # Split command
+    split_parser = subparsers.add_parser('split', help='Split PDF')
+    split_parser.add_argument('input_file', help='Input PDF file')
+    split_parser.add_argument('--output-prefix', default='split', help='Output prefix')
+    split_parser.add_argument('--pages', type=int, default=1, help='Pages per file')
+    
+    # Extract text command
+    text_parser = subparsers.add_parser('extract-text', help='Extract text')
+    text_parser.add_argument('input_file', help='Input PDF file')
+    text_parser.add_argument('--output', help='Output text file')
+    
+    # Extract images command
+    img_parser = subparsers.add_parser('extract-images', help='Extract images')
+    img_parser.add_argument('input_file', help='Input PDF file')
+    img_parser.add_argument('--output-dir', default='extracted_images', help='Output directory')
+    
+    # Create from images command
+    create_parser = subparsers.add_parser('create-from-images', help='Create PDF from images')
+    create_parser.add_argument('image_files', nargs='+', help='Input image files')
+    create_parser.add_argument('--output', default='created.pdf', help='Output PDF file')
+    create_parser.add_argument('--title', default='Generated PDF', help='PDF title')
+    
+    # Watermark command
+    watermark_parser = subparsers.add_parser('watermark', help='Add watermark')
+    watermark_parser.add_argument('input_file', help='Input PDF file')
+    watermark_parser.add_argument('watermark_text', help='Watermark text')
+    watermark_parser.add_argument('--output', default='watermarked.pdf', help='Output file')
+    
+    args = parser.parse_args()
+    engine = PDFEngine()
+    
+    if args.command == 'merge':
+        result = engine.merge_pdfs(args.input_files, args.output)
+    elif args.command == 'split':
+        result = engine.split_pdf(args.input_file, args.output_prefix, args.pages)
+    elif args.command == 'extract-text':
+        result = engine.extract_text(args.input_file, args.output)
+    elif args.command == 'extract-images':
+        result = engine.extract_images(args.input_file, args.output_dir)
+    elif args.command == 'create-from-images':
+        result = engine.create_pdf_from_images(args.image_files, args.output, args.title)
+    elif args.command == 'watermark':
+        result = engine.add_watermark(args.input_file, args.watermark_text, args.output)
+    else:
+        parser.print_help()
+        result = "No command specified"
+    
+    print(result)
+EOF
+chmod +x /usr/local/bin/pdf_engine.py
+```
+
+**3. PDF Search Engine**
+```bash
+cat > /usr/local/bin/pdf_search.py << 'EOF'
+#!/usr/bin/env python3
+import os
+import PyPDF2
+import pdfplumber
+import argparse
+from pathlib import Path
+
+class PDFSearchEngine:
+    def __init__(self):
+        pass
+    
+    def search_in_pdf(self, pdf_path, search_terms, case_sensitive=False):
+        """Search for terms in a PDF file"""
+        results = []
+        
+        try:
+            with pdfplumber.open(pdf_path) as pdf:
+                for page_num, page in enumerate(pdf.pages,
